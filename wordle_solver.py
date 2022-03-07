@@ -1,3 +1,4 @@
+# Wordle Solver
 
 ALL_WORDS_FILE = 'all_words'
 LETTERS = 'abcdefghijklmnopqrstuvwxyz'
@@ -18,7 +19,11 @@ class Solver():
         self.initializeData()
 
     def run(self):
-        # show
+        '''Solve a wordle puzzle.
+           Make guesses, request clues based on guesses
+           until it guesses the word.
+        '''
+        # show score_words in order
         #for score in self.scores:
         #    print(score, self.scored_words[score])
 
@@ -40,6 +45,9 @@ class Solver():
         print(guess)
 
     def makeGuess(self):
+        '''Run through the words in score order and
+           Return the first one that satifies all known clues
+        '''
         found = 0
         while not found:
             self.score_ind += 1
@@ -108,6 +116,9 @@ class Solver():
         return guess
 
     def responseValid(self, response):
+        '''User resonse should be 'C' for correct or
+           A five digit number of 0s,1s, or 2s only
+        '''
         if response.lower() == 'c':
             return 1
 
@@ -121,6 +132,21 @@ class Solver():
         return 1
 
     def updateClues(self, guess, response):
+        '''Convert response hints (0s,1s, and 2s)
+           in to clues and add them to our clue structure
+
+           clues = {0: [<letter_n>, ...],
+                    1: [<letter_n><position_n>, ...],
+                    2: [<letter_n><position_n>, ...]}
+
+           Example:
+
+              clues = { 0: ['a'],   # no 'a's
+                        1: ['t1'],  # there is a 't' but not in position 1
+                        2: ['s2']}  # there is an 's' in position 1
+
+           Positions are start at 1 (not 0)
+        '''
         for i, c in enumerate(response):
             if c == '2':
                 self.clues['matches'].append(guess[i] + str(i+1))
@@ -140,7 +166,27 @@ class Solver():
             print('clues:', self.clues)
             pause = input('pause.')
 
+    # Initialization Code ----------------
+
     def initializeData(self):
+        '''Create a dict self.scored_words as {score: list of word}
+
+           { 23060: ['esses'],
+             22474: ['asses'],
+             22414: ['eases'],
+             21334: ['erses', 'seers', 'seres'],
+             21274: ['resee'],
+             21112: ['sises'],
+             21052: ['seise'],
+             20864: ['leses', 'seels'],
+             20814: ['oases'],
+             ...
+           }
+
+           The score is calculated as the sum of each of a words
+           letter's letter_frequency_score
+        '''
+
         words = self.loadWords()
         print(f'{len(words)} words in repository')
 
@@ -151,6 +197,7 @@ class Solver():
         self.scores = sorted(list(self.scored_words.keys()), reverse=True)
 
     def loadWords(self):
+        '''Read words from file'''
         words = []
         for word in open(ALL_WORDS_FILE, 'r').readlines():
             word = word.strip()
@@ -158,6 +205,10 @@ class Solver():
         return words
 
     def getFrequency(self, words):
+        '''Return dict letter_frequency as {letter: score}
+             where score is number of times that letter shows
+             up in the list of words
+        '''
         lfreq = {}
         for letter in LETTERS:
             lfreq[letter] = 0
@@ -168,6 +219,9 @@ class Solver():
         return lfreq
 
     def getWordScores(self, words, lfreqs):
+        '''Give a list of words and the letter_requencey dict
+           return a dict scores of the form {score: word_list}
+        '''
         scores = {}
         for word in words:
             score = sum([lfreqs[l] for l in word])
