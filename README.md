@@ -1,10 +1,12 @@
 # Wordle Solver
 
 Clues:
-0 - Miss: Letter not in the word
-1 - Hit: Letter in the word but wrong spot
+
+0 - Miss: Letter not in the word<br/>
+1 - Hit: Letter in the word but wrong spot<br/>
 2 - Match: Letter in the word and in the correct spot
 
+Example run:
 ```
 $ python3 wordle_solver.py
 8913 words in repository
