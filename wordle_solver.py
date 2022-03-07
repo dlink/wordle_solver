@@ -1,7 +1,7 @@
 
 ALL_WORDS_FILE = 'all_words'
 LETTERS = 'abcdefghijklmnopqrstuvwxyz'
-DEBUG = 1
+DEBUG = 0
 
 class Solver():
 
@@ -27,7 +27,7 @@ class Solver():
         while not done:
             guess = self.makeGuess()
             guesses.append(guess)
-            print('Guess:', guess)
+            print(f'\nGuess {self.num_guesses}: {guess}')
             while 1:
                 response = input('Correct (C)? or new clues? ')
                 if(self.responseValid(response)):
@@ -136,15 +136,16 @@ class Solver():
                    guess[i] not in hit_letters:
                     self.clues['misses'].append(guess[i])
 
-        print('clues:', self.clues)
-        pause = input('pause.')
+        if DEBUG:
+            print('clues:', self.clues)
+            pause = input('pause.')
 
     def initializeData(self):
         words = self.loadWords()
-        print(f'{len(words)} words')
+        print(f'{len(words)} words in repository')
 
         letter_freqs = self.getFrequency(words)
-        print(letter_freqs)
+        #print(letter_freqs)
 
         self.scored_words = self.getWordScores(words, letter_freqs)
         self.scores = sorted(list(self.scored_words.keys()), reverse=True)
